@@ -29,6 +29,11 @@
             <artifactId>gdx-controllers-lwjgl3</artifactId>
             <version>1.9.11</version>
         </dependency>
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-box2d</artifactId>
+            <version>1.9.1</version>
+        </dependency>
     </dependencies>
 
     <properties>
