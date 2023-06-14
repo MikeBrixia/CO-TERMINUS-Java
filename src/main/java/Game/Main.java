@@ -11,7 +11,7 @@ public class Main
     public static void main (String[] arg)
     {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setWindowedMode(1000, 900);
+        config.setWindowedMode(1280, 720);
         config.setIdleFPS(60);
         config.useVsync(true);
         config.setTitle("CO-TERMINUS");
