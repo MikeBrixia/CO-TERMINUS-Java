@@ -1,20 +1,21 @@
 package Game.Utils;
 
+import Game.Beans.GameLevel;
 import com.badlogic.gdx.math.Vector2;
 
+/** Collection of constants used to configure the game. */
 public class Constants
 {
-    public static class Physics
+    /** Configuration properties used to initialize the game. */
+    public static class GameConfig
     {
-        public static final Vector2 gravity = new Vector2(0f, -9.8f);
-    }
-
-    public static class Transformations
-    {
-        public static final float UNIT_SCALE_1x16 = 1/16f;
-        public static final float UNIT_SCALE_1x32 = 1/32f;
+        /** The scene class which will be used for the game. */
+        public static final Class sceneClass = GameLevel.class;
 
         /** The unit scale of the game. 1/16 by default. */
-        public static final float GAME_UNIT_SCALE = 1/16f;
+        public static final float METER_PER_PIXEL = 16f;
+
+        /** The gravity force of the game. */
+        public static final Vector2 gravity = new Vector2(0f, -9.8f);
     }
 }

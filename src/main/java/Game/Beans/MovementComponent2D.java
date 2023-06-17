@@ -1,10 +1,7 @@
 package Game.Beans;
 
+import Game.Core.GameApplication;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.PolygonBatch;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -31,16 +28,17 @@ public class MovementComponent2D extends GameComponent
 
      private ShapeRenderer debugRenderer;
 
-     public MovementComponent2D(Actor owner, BodyDef bodyDefinition, FixtureDef fixtureDefinition)
+     public MovementComponent2D(GameEntity owner, BodyDef bodyDefinition, FixtureDef fixtureDefinition)
      {
           super(owner);
-          this.world = GameManager.get().world;
+          this.world = GameApplication.getGameInstance().getWorld();
           this.bodyDefinition = bodyDefinition;
           this.debugRenderer = new ShapeRenderer();
           debugRenderer.setAutoShapeType(true);
 
           // Create the physic body for physic movement handling
           rigidBody = world.createBody(this.bodyDefinition);
+          rigidBody.setUserData(owner);
           this.collider = rigidBody.createFixture(fixtureDefinition);
      }
 
@@ -57,23 +55,9 @@ public class MovementComponent2D extends GameComponent
           owner.setPosition(bodyPosition.x, bodyPosition.y);
      }
 
-     public void debugRender()
-     {
-          // Render polygon shape.
-          debugRenderer.begin(ShapeRenderer.ShapeType.Line);
-          debugRenderer.setColor(Color.GREEN);
-          Vector2 a = new Vector2();
-          Vector2 b = new Vector2();
-          PolygonShape colliderShape = (PolygonShape) collider.getShape();
-          int vertexCount = colliderShape.getVertexCount();
-          for(int i = 0; i < vertexCount; i++)
-          {
-               colliderShape.getVertex(i, a);
-               colliderShape.getVertex((i+1) % vertexCount, b);
-               debugRenderer.rectLine(a, b, 3);
-          }
-          debugRenderer.end();
-          // shape rendering has ended.
+     @Override
+     public void destruction() {
+
      }
 
      public Body getRigidBody()

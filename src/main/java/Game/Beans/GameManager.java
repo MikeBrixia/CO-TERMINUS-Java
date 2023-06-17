@@ -8,13 +8,10 @@ public class GameManager
     /** Global instance of the game manager. */
     private static GameManager instance;
 
-    public World world;
-
     public Player player;
 
     private GameManager()
     {
-
     }
 
     public static GameManager get()

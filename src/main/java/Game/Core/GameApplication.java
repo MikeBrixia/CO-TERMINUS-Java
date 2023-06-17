@@ -1,67 +1,63 @@
 package Game.Core;
 
-import Game.Beans.GameManager;
-import Game.Beans.Player;
-import Game.Beans.Scene;
+import Game.Utils.Constants;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 
 public class GameApplication extends ApplicationAdapter {
 
-    private World world;
-
-    /** The scene currently played inside by the game application.
-     *  Only one scene at a time can be played. */
-    private static Scene scene;
+    /** Global game instance reference. */
+    private static CoTerminus gameInstance;
 
     /** Main game camera. */
     private static OrthographicCamera camera;
 
-    private GameManager gameManager;
+    /** Reference to the game viewport. */
+    private static Viewport viewport;
 
-    private Viewport viewport;
-
-    Box2DDebugRenderer worldDebugRenderer;
+    private float viewportWidth = 1280;
+    private float viewportHeight = 720;
 
     @Override
     public void create() {
 
-        gameManager = GameManager.get();
+        float scale = Constants.GameConfig.METER_PER_PIXEL;
 
         // Initialize game camera.
-        camera = new OrthographicCamera(1280f, 720f);
-        // Move camera origin from Libgdx screen center(0,0) to bottom left corner.
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-        viewport = new FitViewport(camera.viewportWidth, camera.viewportHeight, camera);
+        camera = new OrthographicCamera(viewportWidth / scale, viewportHeight / scale);
+        viewport = new FitViewport(viewportWidth / scale, viewportHeight / scale, camera);
+        // Center the camera on the screen.
+        camera.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight()/ 2, 0);
         // Apply changes to the camera.
         camera.update();
 
-        // Initialize physics world.
-        world = new World(new Vector2(0, -9.8f), true);
-        worldDebugRenderer = new Box2DDebugRenderer();
-        gameManager.world = world;
+        // Create game instance and call its start method.
+        gameInstance = new CoTerminus();
+        gameInstance.create();
+    }
 
-        scene = new Scene();
-        scene.start();
+    /** Called when the game gets resumed from the paused state. */
+    @Override
+    public void resume() {
+        super.resume();
+    }
 
-        Player player = new Player();
-        gameManager.player = player;
-
+    /** Called when the game gets put into the paused state. */
+    @Override
+    public void pause() {
+        super.pause();
     }
 
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
         viewport.update(width, height);
-        camera.setToOrtho(false, width, height);
+        camera.update();
     }
 
     /** This method gets called each tick(every frame).
@@ -73,16 +69,12 @@ public class GameApplication extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        world.step(1/60f, 6, 2);
-
+        // Update game instance.
         float deltaTime = Gdx.graphics.getDeltaTime();
-        scene.update(deltaTime);
+        gameInstance.update(deltaTime);
+
+        // Update the camera properties at the end of the game update.
         camera.update();
-
-        Player player = gameManager.player;
-        player.update(deltaTime);
-        player.draw(null, 0);
-
     }
 
     @Override
@@ -95,13 +87,8 @@ public class GameApplication extends ApplicationAdapter {
         return camera;
     }
 
-    /** Get the current target scene of the game application. */
-    public static Scene getScene() {
-        return scene;
-    }
+    /** Get the application game instance. */
+    public static CoTerminus getGameInstance() { return gameInstance; }
 
-    /** Set a new target scene for the game application. */
-    public static void setScene(Scene scene) {
-        GameApplication.scene = scene;
-    }
+    public static Viewport getViewport() { return viewport; }
 }
