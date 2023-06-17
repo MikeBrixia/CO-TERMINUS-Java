@@ -34,7 +34,7 @@ public class CoTerminus extends Game implements IUpdatable
         gameManager = GameManager.get();
 
         // Initialize physics world.
-        world = new World(Constants.GameConfig.gravity, true);
+        world = new World(Constants.gravity, true);
         red = new Box2DDebugRenderer();
         // Initialize game scene representation.
         gameLevel = new GameLevel();

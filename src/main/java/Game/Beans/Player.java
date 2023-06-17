@@ -22,7 +22,7 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
 
     public Player()
     {
-        setScale(.1f / Constants.GameConfig.METER_PER_PIXEL);
+        setScale(.1f / Constants.METER_PER_PIXEL);
 
         // Initialize player sprite component.
         String playerSpriteFilepath = GameUtils.RES_FILEPATH + "sprites/viggo_idle_0000.png";
@@ -41,7 +41,7 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
 
     @Override
     public void start() {
-        float unitScale = Constants.GameConfig.METER_PER_PIXEL;
+        float unitScale = Constants.METER_PER_PIXEL;
 
         // Initialize player position using game level property PlayerSpawn point.
         GameLevel gameLevel = (GameLevel) GameApplication.getGameInstance().getScene();
@@ -53,7 +53,7 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
         float x = spawnProperties.get("x", float.class) / unitScale;
         float y = spawnProperties.get("y", float.class) / unitScale;
         // Set initial player actor position.
-        Vector3 initialPosition = new Vector3(x, y + 400,0);
+        Vector3 initialPosition = new Vector3(x, y,0);
         setPosition(initialPosition.x, initialPosition.y);
 
         // Initialize player physics body.
@@ -66,7 +66,7 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
         FixtureDef fixtureDefinition = new FixtureDef();
         fixtureDefinition.isSensor = false;
         PolygonShape collider = new PolygonShape();
-        collider.setAsBox(5f / unitScale, 5f / unitScale);
+        collider.setAsBox(20f / unitScale, 30f / unitScale);
         fixtureDefinition.shape = collider;
         movementComponent = new MovementComponent2D(this, bodyDefinition, fixtureDefinition);
     }

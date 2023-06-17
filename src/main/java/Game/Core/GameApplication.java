@@ -5,6 +5,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -20,19 +21,22 @@ public class GameApplication extends ApplicationAdapter {
     /** Reference to the game viewport. */
     private static Viewport viewport;
 
-    private float viewportWidth = 1280;
-    private float viewportHeight = 720;
+    // 16:9 resolution.
+    private final float viewportWidth = 1024;
+    private final float viewportHeight = 576;
 
     @Override
     public void create() {
 
-        float scale = Constants.GameConfig.METER_PER_PIXEL;
+        // Scale resolution by the game unit constant.
+        float unitScale = Constants.METER_PER_PIXEL;
+        float width = viewportWidth / unitScale;
+        float height = viewportHeight / unitScale;
 
         // Initialize game camera.
-        camera = new OrthographicCamera(viewportWidth / scale, viewportHeight / scale);
-        viewport = new FitViewport(viewportWidth / scale, viewportHeight / scale, camera);
-        // Center the camera on the screen.
-        camera.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight()/ 2, 0);
+        camera = new OrthographicCamera(width, height);
+        viewport = new ExtendViewport(width, height, camera);
+
         // Apply changes to the camera.
         camera.update();
 
@@ -56,7 +60,10 @@ public class GameApplication extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
+        // Update the viewport.
         viewport.update(width, height);
+        // Center the camera on screen.
+        camera.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
         camera.update();
     }
 

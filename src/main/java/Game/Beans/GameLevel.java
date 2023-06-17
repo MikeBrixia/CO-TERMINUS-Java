@@ -29,20 +29,16 @@ public class GameLevel extends Scene implements IUpdatable
     /** Game Scene unit scale. */
     private float unitScale;
 
-    private ShapeRenderer renderer;
-
     @Override
     public void start() {
         // Load tilemap .tmx file from disk.
         map = GameUtils.loadTmxTilemap(GameUtils.RES_FILEPATH + "Levels/Map.tmx");
 
         // Read map unit scale from the transformation constants config.
-        unitScale = Constants.GameConfig.METER_PER_PIXEL;
+        unitScale = Constants.METER_PER_PIXEL;
 
         // Initialize tilemap renderer.
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1/unitScale);
-
-        renderer = new ShapeRenderer();
 
         // Create all the scene collisions using the data
         // imported from the tiled editor.
