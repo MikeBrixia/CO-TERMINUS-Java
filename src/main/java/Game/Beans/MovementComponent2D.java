@@ -39,8 +39,8 @@ public final class MovementComponent2D extends GameComponent
           this.movementState = EMovementState.NONE;
 
           // Initialize walking movement property.
-          MovementProperty walkingMovement = new MovementProperty(700, 800,
-                                                               100, 100,
+          MovementProperty walkingMovement = new MovementProperty(1000, 1200,
+                                                               400, 100,
                                                            200);
           this.movementPropertiesMap.put(EMovementState.WALKING, walkingMovement);
           this.movementPropertiesMap.put(EMovementState.FALLING, walkingMovement);

@@ -28,20 +28,23 @@ public class SpriteComponent extends GameComponent implements IRenderable
     @Override
     public void render() {
 
-        // Get the actor scale and use it to update sprite scale.
-        Vector2 actorScale = new Vector2(owner.getScaleX(), owner.getScaleY());
-        sprite.setScale(actorScale.x, actorScale.y);
+        if(sprite != null)
+        {
+            // Get the actor scale and use it to update sprite scale.
+            Vector2 actorScale = new Vector2(owner.getScaleX(), owner.getScaleY());
+            sprite.setScale(actorScale.x, actorScale.y);
 
-        // Get actor position and use it to update sprite position.
-        // Actor position will be used to compute the sprite center.
-        Vector3 actorPosition = new Vector3(owner.getX(), owner.getY(), 0);
-        sprite.setPosition(actorPosition.x + -sprite.getWidth()/2, actorPosition.y + -sprite.getHeight()/2);
+            // Get actor position and use it to update sprite position.
+            // Actor position will be used to compute the sprite center.
+            Vector3 actorPosition = new Vector3(owner.getX(), owner.getY(), 0);
+            sprite.setPosition(actorPosition.x + -sprite.getWidth()/2, actorPosition.y + -sprite.getHeight()/2);
 
-        // Draw the player sprite each frame.
-        batch.setProjectionMatrix(GameApplication.getCamera().combined);
-        batch.begin();
-        sprite.draw(batch);
-        batch.end();
+            // Draw the player sprite each frame.
+            batch.setProjectionMatrix(GameApplication.getCamera().combined);
+            batch.begin();
+            sprite.draw(batch);
+            batch.end();
+        }
     }
 
     public void setSprite(Sprite sprite)

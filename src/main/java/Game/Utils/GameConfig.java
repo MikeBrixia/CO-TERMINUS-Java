@@ -18,4 +18,5 @@ public class GameConfig
 
     /** The game resource folder filepath. */
     public static final String RES_FILEPATH = "src/main/resources/";
+
 }

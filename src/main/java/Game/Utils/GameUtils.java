@@ -1,5 +1,6 @@
 package Game.Utils;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
@@ -16,5 +17,4 @@ public class GameUtils
         TiledMap loadedMap = mapLoader.load(filepath);
         return loadedMap;
     }
-
 }
