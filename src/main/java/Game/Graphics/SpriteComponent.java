@@ -37,9 +37,6 @@ public class SpriteComponent extends GameComponent implements IRenderable
         Vector3 actorPosition = new Vector3(owner.getX(), owner.getY(), 0);
         sprite.setPosition(actorPosition.x + -sprite.getWidth()/2, actorPosition.y + -sprite.getHeight()/2);
 
-        // Get the actor rotation and use it to update the sprite rotation.
-        sprite.setRotation(owner.getRotation());
-
         // Draw the player sprite each frame.
         batch.setProjectionMatrix(GameApplication.getCamera().combined);
         batch.begin();
@@ -51,4 +48,6 @@ public class SpriteComponent extends GameComponent implements IRenderable
     {
         this.sprite = sprite;
     }
+
+    public Sprite getSprite() { return sprite; }
 }

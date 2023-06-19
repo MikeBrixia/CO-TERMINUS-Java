@@ -11,7 +11,6 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class Player extends GameEntity implements IUpdatable, ICollisionListener, IRenderable
@@ -24,6 +23,9 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
 
     /** The player collider. */
     private Fixture collider;
+
+    /** Should the player character be flipped during the update? */
+    private boolean flip = false;
 
     public Player()
     {
@@ -39,7 +41,6 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
 
     @Override
     public void start() {
-        super.start();
         float unitScale = GameConfig.METER_PER_PIXEL;
 
         // Initialize player scale.
@@ -84,8 +85,6 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
 
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime);
-
         // Get Gdx input handler.
         Input inputHandler = Gdx.input;
 
@@ -94,11 +93,16 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
         if(inputHandler.isKeyPressed(Input.Keys.A))
         {
             inputScale = -1f;
+            spriteComponent.getSprite().flip(true, false);
+
         }
         else if(inputHandler.isKeyPressed(Input.Keys.D))
         {
             inputScale = 1f;
         }
+
+        // Rotate the player sprite based on user input.
+        flipPlayer(inputScale);
 
         // Handle jump input.
         if(inputHandler.isKeyPressed(Input.Keys.SPACE))
@@ -112,6 +116,17 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
 
         Vector2 movementDirection = new Vector2(inputScale, 0);
         movementComponent.addMovementInput(movementDirection);
+    }
+
+    /** Flip the player sprite on the Y axis. */
+    private void flipPlayer(float inputScale)
+    {
+        if(inputScale != 0)
+        {
+            Sprite sprite = spriteComponent.getSprite();
+            boolean shouldFlip = inputScale == 1f;
+            sprite.setFlip(shouldFlip, false);
+        }
     }
 
     @Override
@@ -141,7 +156,6 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
         // notify the movement component that there was a collision.
         else if(userData.equals("Ground") || userData.equals("InvisibleWall"))
         {
-            //movementComponent.onCollision(contact);
         }
     }
 

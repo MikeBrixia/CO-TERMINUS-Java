@@ -16,11 +16,16 @@ public class MovementProperty
     /** The maximum reachable Y speed for the jump.*/
     public float maxJumpSpeed;
 
-    public MovementProperty(float speed, float maxSpeed, float jumpSpeed, float maxJumpSpeed)
+    /** The maximum Y speed reachable when falling down. */
+    public float maxFallingSpeed;
+
+    public MovementProperty(float speed, float maxSpeed, float jumpSpeed, float maxJumpSpeed,
+                            float maxFallingSpeed)
     {
         this.speed = speed;
         this.maxSpeed = maxSpeed;
         this.jumpSpeed = jumpSpeed;
         this.maxJumpSpeed = maxJumpSpeed;
+        this.maxFallingSpeed = maxFallingSpeed;
     }
 }

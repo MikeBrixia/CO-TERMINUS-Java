@@ -26,8 +26,19 @@ public abstract class GameEntity extends Actor implements IUpdatable
     {
     }
 
-    @Override
-    public void start() {
+    /** Notify an entity and all it's components
+     * that the game has started. */
+    public void startEntity()
+    {
+        // First start the entity.
+        start();
+        // Then starts each one of it's attached components.
+        startComponents();
+    }
+
+    /** Start all the entity components. */
+    private void startComponents()
+    {
         // Notify each entity component that the game
         // has been started.
         for(GameComponent component : entityComponents)
@@ -40,21 +51,49 @@ public abstract class GameEntity extends Actor implements IUpdatable
         }
     }
 
-    @Override
-    public void update(float deltaTime) {
+    /** Update an entity with all it's components. */
+    public void updateEntity(float deltaTime)
+    {
+        // First update the entity.
+        update(deltaTime);
+        // Then update each one of the entity components.
+        updateComponents(deltaTime);
+    }
+
+    /** Update all the entity components. */
+    private void updateComponents(float deltaTime)
+    {
         // Update each entity component.
-       for(GameComponent component : entityComponents)
-       {
-           // Is the component active?
-           if(component.active)
-           {
-               // Is the component updatable?
-               if(component instanceof IUpdatable updatableComponent)
-               {
-                   updatableComponent.update(deltaTime);
-               }
-           }
-       }
+        for(GameComponent component : entityComponents)
+        {
+            // Is the component active?
+            if(component.active)
+            {
+                // Is the component updatable?
+                if(component instanceof IUpdatable updatableComponent)
+                {
+                    updatableComponent.update(deltaTime);
+                }
+            }
+        }
+    }
+
+    /** Destroy all the components attached to this entity. */
+    public void destroyComponents()
+    {
+        // Update each entity component.
+        for(GameComponent component : entityComponents)
+        {
+            // Is the component active?
+            if(component.active)
+            {
+                // Is the component updatable?
+                if(component instanceof IUpdatable updatableComponent)
+                {
+                    updatableComponent.destruction();
+                }
+            }
+        }
     }
 
     /** Attach a brand-new component to this entity.

@@ -39,7 +39,9 @@ public final class MovementComponent2D extends GameComponent
           this.movementState = EMovementState.NONE;
 
           // Initialize walking movement property.
-          MovementProperty walkingMovement = new MovementProperty(500, 800, 200, 100);
+          MovementProperty walkingMovement = new MovementProperty(700, 800,
+                                                               100, 100,
+                                                           200);
           this.movementPropertiesMap.put(EMovementState.WALKING, walkingMovement);
           this.movementPropertiesMap.put(EMovementState.FALLING, walkingMovement);
           this.movementPropertiesMap.put(EMovementState.JUMPING, walkingMovement);
@@ -50,11 +52,13 @@ public final class MovementComponent2D extends GameComponent
           setMovementState(EMovementState.WALKING);
      }
 
+     /** Make the component perform a jump on the Y axis.*/
      public void jump()
      {
           // Is the component owner currently grounded?
           if(isGrounded())
           {
+               // If true, then apply and impulse on the Y axis using jump speed.
                Vector2 jumpImpulse = new Vector2(0f, movementProperty.jumpSpeed);
                setMovementState(EMovementState.JUMPING);
                rigidBody.applyLinearImpulse(jumpImpulse, rigidBody.getLocalCenter(), true);
@@ -65,8 +69,11 @@ public final class MovementComponent2D extends GameComponent
       * make it fall. */
      public void stopJump()
      {
+          // Is the movement component currently jumping?
           if(movementState.equals(EMovementState.JUMPING))
           {
+               // If true, then set Y linear velocity to 0, to make
+               // the component fall down.
                Vector2 linearVelocity = rigidBody.getLinearVelocity();
                rigidBody.setLinearVelocity(linearVelocity.x, 0);
                setMovementState(EMovementState.FALLING);
@@ -77,13 +84,21 @@ public final class MovementComponent2D extends GameComponent
       * each frame in order to actually advance movement simulation. */
      public void addMovementInput(Vector2 direction)
      {
+          // Scale velocity using delta time. This will make movement
+          // velocity frame rate independent.
           float deltaTime = Gdx.graphics.getDeltaTime();
           Vector2 velocity = direction.scl(movementProperty.speed).scl(deltaTime);
-          computeMovement(new Vector2(velocity.x, rigidBody.getLinearVelocity().y));
+          // Using input velocity compute movement.
+          velocity = computeMovement(new Vector2(velocity.x, rigidBody.getLinearVelocity().y));
+          // Update the component owner linear velocity.
+          rigidBody.setLinearVelocity(velocity);
+          // Update physic body position.
+          Vector2 bodyPosition = rigidBody.getPosition();
+          owner.setPosition(bodyPosition.x, bodyPosition.y);
      }
 
      /** Compute movement using input velocity. */
-     private void computeMovement(Vector2 velocity)
+     private Vector2 computeMovement(Vector2 velocity)
      {
           // Is the movement owner falling down on
           // the Y axis?
@@ -100,14 +115,9 @@ public final class MovementComponent2D extends GameComponent
 
           // Clamp velocity to keep it in defined bounds.
           velocity.x = MathUtils.clamp(velocity.x, -movementProperty.maxSpeed, movementProperty.maxSpeed);
-          velocity.y = MathUtils.clamp(velocity.y, -movementProperty.maxJumpSpeed, movementProperty.maxJumpSpeed);
-          // Update the component owner linear velocity.
-          rigidBody.setLinearVelocity(velocity);
+          velocity.y = MathUtils.clamp(velocity.y, -movementProperty.maxFallingSpeed, movementProperty.maxJumpSpeed);
 
-          // Get rigidbody position and use it to update
-          // the owner position.
-          Vector2 bodyPosition = rigidBody.getPosition();
-          owner.setPosition(bodyPosition.x, bodyPosition.y);
+          return velocity;
      }
 
      /** Is the component owner currently in air?

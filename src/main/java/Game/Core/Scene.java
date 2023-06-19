@@ -21,7 +21,7 @@ public abstract class Scene implements IUpdatable, IRenderable
             // Is the entity active and therefore updatable?
             if(entity.active)
             {
-                entity.start();
+                entity.startEntity();
             }
         }
     }
@@ -35,7 +35,7 @@ public abstract class Scene implements IUpdatable, IRenderable
             // Is the entity active and therefore updatable?
             if(entity.active)
             {
-                entity.update(deltaTime);
+                entity.updateEntity(deltaTime);
             }
         }
     }
@@ -46,6 +46,9 @@ public abstract class Scene implements IUpdatable, IRenderable
         // destroy all entities inside it.
         for(GameEntity entity : entities)
         {
+            // First destroy all the entity components.
+            entity.destroyComponents();
+            // Then destroy
             entity.destruction();
         }
     }
