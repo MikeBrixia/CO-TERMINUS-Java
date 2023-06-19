@@ -1,12 +1,11 @@
 package Game.Beans;
 
 import Game.Core.GameApplication;
-import Game.Utils.Constants;
+import Game.Core.GameFactory;
+import Game.Core.IUpdatable;
+import Game.Core.Scene;
+import Game.Utils.GameConfig;
 import Game.Utils.GameUtils;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.particles.values.RectangleSpawnShapeValue;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -18,7 +17,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 
 /** Default level for CO-TERMINUS. */
-public class GameLevel extends Scene implements IUpdatable
+public class GameLevel extends Scene
 {
     /** Tilemap object instance. */
     private TiledMap map;
@@ -29,13 +28,15 @@ public class GameLevel extends Scene implements IUpdatable
     /** Game Scene unit scale. */
     private float unitScale;
 
+    // Use this method to initialize the scene and create the
+    // entities which should populate it on startup.
     @Override
-    public void start() {
+    public void init() {
         // Load tilemap .tmx file from disk.
-        map = GameUtils.loadTmxTilemap(GameUtils.RES_FILEPATH + "Levels/Map.tmx");
+        map = GameUtils.loadTmxTilemap(GameConfig.RES_FILEPATH + "Levels/Map.tmx");
 
         // Read map unit scale from the transformation constants config.
-        unitScale = Constants.METER_PER_PIXEL;
+        unitScale = GameConfig.METER_PER_PIXEL;
 
         // Initialize tilemap renderer.
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1/unitScale);
@@ -43,10 +44,15 @@ public class GameLevel extends Scene implements IUpdatable
         // Create all the scene collisions using the data
         // imported from the tiled editor.
         createSceneCollisions();
+
+        // Get unique game manager reference.
+        GameManager gameManager = GameManager.get();
+
+        // Create player instance.
+        gameManager.player = (Player) GameFactory.createEntity(Player.class);
     }
 
-    @Override
-    public void update(float deltaTime) {
+    public void render() {
         // Is the map renderer valid?
         if(mapRenderer != null)
         {
@@ -54,11 +60,12 @@ public class GameLevel extends Scene implements IUpdatable
             mapRenderer.render();
             mapRenderer.setView(GameApplication.getCamera());
         }
-    }
 
-    @Override
-    public void destruction() {
-
+        // Render the player on screen. The player
+        // render method MUST be called after the map render
+        // method because Libgdx doesn't have a nice way of ordering
+        // sprites like Z Index grouping.
+        GameManager.get().player.render();
     }
 
     /** Create all the scene colliders using the map layer collision
@@ -71,6 +78,7 @@ public class GameLevel extends Scene implements IUpdatable
 
         for(MapObject obj : collidersData)
         {
+            // Get collision rectangle from tiled object.
             Rectangle rect = ((RectangleMapObject) obj).getRectangle();
 
             // Read collision properties and apply to them the game scene
@@ -86,8 +94,8 @@ public class GameLevel extends Scene implements IUpdatable
 
             // Create box 2D shape.
             PolygonShape shape = new PolygonShape();
-
             shape.setAsBox((rect.getWidth() / 2) / unitScale, (rect.getHeight() / 2) / unitScale);
+
             // Create collision using box 2D shape.
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = shape;
@@ -97,6 +105,7 @@ public class GameLevel extends Scene implements IUpdatable
             World world = GameApplication.getGameInstance().getWorld();
             Body body = world.createBody(bodyDef);
             body.createFixture(fixtureDef);
+            body.setUserData(obj.getProperties().get("type"));
         }
     }
 
@@ -126,4 +135,5 @@ public class GameLevel extends Scene implements IUpdatable
     public OrthogonalTiledMapRenderer getMapRenderer() {
         return mapRenderer;
     }
+
 }

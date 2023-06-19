@@ -1,14 +1,12 @@
 package Game.Core;
 
-import Game.Utils.Constants;
+import Game.Utils.GameConfig;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 
 public class GameApplication extends ApplicationAdapter {
 
@@ -29,7 +27,7 @@ public class GameApplication extends ApplicationAdapter {
     public void create() {
 
         // Scale resolution by the game unit constant.
-        float unitScale = Constants.METER_PER_PIXEL;
+        float unitScale = GameConfig.METER_PER_PIXEL;
         float width = viewportWidth / unitScale;
         float height = viewportHeight / unitScale;
 
@@ -76,9 +74,11 @@ public class GameApplication extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Update game instance.
+        // Get time delta.
         float deltaTime = Gdx.graphics.getDeltaTime();
-        gameInstance.update(deltaTime);
+
+        // Update the game.
+        gameInstance.gameLoopUpdate(deltaTime);
 
         // Update the camera properties at the end of the game update.
         camera.update();

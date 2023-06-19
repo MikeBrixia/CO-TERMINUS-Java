@@ -1,20 +1,17 @@
 package Game.Graphics;
-import Game.Beans.GameComponent;
-import Game.Beans.GameEntity;
-import Game.Beans.IUpdatable;
+import Game.Core.GameComponent;
+import Game.Core.GameEntity;
+import Game.Core.IRenderable;
 import Game.Core.GameApplication;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 
 
 /** Component used to handle sprite creation and
  *  drawing policies. */
-public class SpriteComponent extends GameComponent
+public class SpriteComponent extends GameComponent implements IRenderable
 {
     /** The sprite this component is going to render, */
     private Sprite sprite;
@@ -22,27 +19,14 @@ public class SpriteComponent extends GameComponent
     /** The batch responsible for drawing the sprite. */
     private SpriteBatch batch;
 
-    public SpriteComponent(GameEntity owner, String path)
+    public SpriteComponent(GameEntity owner)
     {
         super(owner);
-        Texture image = new Texture(path);
-        this.sprite = new Sprite(image);
         this.batch = new SpriteBatch();
     }
 
-    public SpriteComponent(GameEntity owner, Sprite sprite)
-    {
-        super(owner);
-        this.sprite = sprite;
-    }
-
     @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void update(float deltaTime) {
+    public void render() {
 
         // Get the actor scale and use it to update sprite scale.
         Vector2 actorScale = new Vector2(owner.getScaleX(), owner.getScaleY());
@@ -63,8 +47,8 @@ public class SpriteComponent extends GameComponent
         batch.end();
     }
 
-    @Override
-    public void destruction() {
-
+    public void setSprite(Sprite sprite)
+    {
+        this.sprite = sprite;
     }
 }

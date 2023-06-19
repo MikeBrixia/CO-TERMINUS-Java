@@ -1,6 +1,5 @@
 package Game.Core;
 
-import Game.Beans.ICollisionListener;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -56,15 +55,13 @@ public class WorldContactListener implements ContactListener
     private void notifyBodies(Contact contact, Method event) throws InvocationTargetException, IllegalAccessException
     {
         // If body A is attached to a collision listener, then notify it of the collision event.
-        ICollisionListener listenerA = (ICollisionListener) contact.getFixtureA().getBody().getUserData();
-        if(listenerA != null)
+        if(contact.getFixtureA().getBody().getUserData() instanceof ICollisionListener listenerA)
         {
             event.invoke(listenerA, contact);
         }
 
         // If body B is attached to a collision listener, then notify it of the collision event.
-        ICollisionListener listenerB = (ICollisionListener) contact.getFixtureB().getBody().getUserData();
-        if(listenerB != null)
+        if(contact.getFixtureB().getBody().getUserData() instanceof ICollisionListener listenerB)
         {
             event.invoke(listenerB, contact);
         }

@@ -1,4 +1,4 @@
-package Game.Beans;
+package Game.Core;
 
 import com.badlogic.gdx.physics.box2d.Contact;
 

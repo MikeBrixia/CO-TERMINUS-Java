@@ -1,16 +1,14 @@
 package Game.Core;
 
-import Game.Beans.*;
-import Game.Utils.Constants;
+import Game.Utils.GameConfig;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 
-/** Global configuration class for CO-TERMINUS game.
- * this class will hold all the info and flow of the game
- * we're playing. */
-public class CoTerminus extends Game implements IUpdatable
+import java.lang.reflect.InvocationTargetException;
+
+/** Main game class, responsible for handling the game loop. */
+public class CoTerminus extends Game
 {
     /** Reference to the global physics world of the game. */
     private World world;
@@ -20,60 +18,88 @@ public class CoTerminus extends Game implements IUpdatable
 
     /** The scene currently played inside by the game application.
      *  Only one scene at a time can be played. */
-    private GameLevel gameLevel;
+    private Scene gameLevel;
 
-    /** Global singleton game manager instance. */
-    private GameManager gameManager;
-
-    private Box2DDebugRenderer red;
+    private Box2DDebugRenderer debugRenderer;
 
     @Override
     public void create() {
 
-        // Initialize/get game manager.
-        gameManager = GameManager.get();
-
         // Initialize physics world.
-        world = new World(Constants.gravity, true);
-        red = new Box2DDebugRenderer();
-        // Initialize game scene representation.
-        gameLevel = new GameLevel();
-        gameLevel.start();
-
-        Player player = new Player();
-        gameManager.player = player;
-
-        start();
-    }
-
-    @Override
-    public void start() {
+        world = new World(GameConfig.gravity, true);
 
         // Initialize world collision handler.
         worldContactListener = new WorldContactListener();
         world.setContactListener(worldContactListener);
+
+        // Initialize physics debug renderer.
+        debugRenderer = new Box2DDebugRenderer();
+
+        // Create game scene.
+        gameLevel = createSceneFromConfig();
+        // Initialize game scene.
+        gameLevel.init();
+        // Once it has been initialized,
+        // start the game inside the scene.
+        gameLevel.start();
     }
 
-    @Override
+    /** Create the scene specified inside the GameConfig.java file. */
+    private Scene createSceneFromConfig()
+    {
+        Scene scene = null;
+        try
+        {
+            Class<?> sceneClass = GameConfig.sceneClass;
+            // Is the configuration scene class valid?
+            if(sceneClass != null)
+            {
+                // If true, then create scene by reading the GameConfig.java file.
+                scene = (Scene) sceneClass.getConstructor().newInstance();
+            }
+        }
+        catch (NoSuchMethodException | InstantiationException | IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+        catch(InvocationTargetException e)
+        {
+            e.getTargetException().printStackTrace();
+        }
+        return scene;
+    }
+
+    /** Update the game world. */
+    public void gameLoopUpdate(float deltaTime)
+    {
+        // Process user input.
+        handleInput();
+        // Tick update(called every frame)
+        update(deltaTime);
+        // Draw game data on screen.
+        render();
+    }
+
+    private void handleInput() {
+    }
+
     public void update(float deltaTime) {
+        
+        // Advance physics world simulation.
         world.step(1/60f, 6, 2);
-
+        
+        // Update the game scene.
         gameLevel.update(deltaTime);
-
-        Player player = gameManager.player;
-        player.update(deltaTime);
-        player.draw(null, 0);
-        red.render(world, GameApplication.getCamera().combined);
-    }
-
-    @Override
-    public void destruction() {
 
     }
 
     public void render()
     {
+        // Render the current scene.
+        gameLevel.render();
 
+        // Render physics debug data.
+        debugRenderer.render(world, GameApplication.getCamera().combined);
     }
 
     /** Get the current target scene of the game application. */

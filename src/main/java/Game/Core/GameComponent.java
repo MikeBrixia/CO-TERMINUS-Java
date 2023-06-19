@@ -1,11 +1,14 @@
-package Game.Beans;
-
-import com.badlogic.gdx.scenes.scene2d.Actor;
+package Game.Core;
 
 /** Components are classes which can be attached to game
  * entities to offer additional functionality. */
-public abstract class GameComponent implements IUpdatable
+public abstract class GameComponent
 {
+    /** Is the game component active and therefore should
+     * receive update? When false this component will not
+     * receive any game update. */
+    public boolean active = true;
+
     /** The owner is the actor to which this component
      * is attached to. */
     protected GameEntity owner;
