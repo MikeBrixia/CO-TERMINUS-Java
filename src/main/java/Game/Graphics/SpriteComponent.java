@@ -1,4 +1,5 @@
 package Game.Graphics;
+import Game.Beans.Projectile;
 import Game.Core.GameComponent;
 import Game.Core.GameEntity;
 import Game.Core.IRenderable;

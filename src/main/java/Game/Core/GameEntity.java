@@ -20,7 +20,7 @@ public abstract class GameEntity extends Actor implements IUpdatable
     /** Tag attached to the game entity. Tags are used to categorize
      * game entities. Tags can be something like: AI, Player, Ground for
      * example. */
-    protected String tag;
+    protected String tag = "default";
 
     public GameEntity()
     {
@@ -44,7 +44,7 @@ public abstract class GameEntity extends Actor implements IUpdatable
         for(GameComponent component : entityComponents)
         {
             // Is the component active?
-            if(component.active && component instanceof IUpdatable updatableComponent)
+            if(component instanceof IUpdatable updatableComponent)
             {
                 updatableComponent.start();
             }

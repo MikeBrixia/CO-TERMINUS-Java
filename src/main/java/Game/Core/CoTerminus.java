@@ -98,8 +98,8 @@ public class CoTerminus extends Game
         // Render the current scene.
         gameLevel.render();
 
-        // Render physics debug data.
-        debugRenderer.render(world, GameApplication.getCamera().combined);
+        // Render physics debug data. DISABLED FOR NOW.
+        //debugRenderer.render(world, GameApplication.getCamera().combined);
     }
 
     /** Get the current target scene of the game application. */

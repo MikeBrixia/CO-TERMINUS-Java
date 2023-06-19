@@ -18,11 +18,7 @@ public abstract class Scene implements IUpdatable, IRenderable
         // the game has started.
         for(GameEntity entity : entities)
         {
-            // Is the entity active and therefore updatable?
-            if(entity.active)
-            {
-                entity.startEntity();
-            }
+            entity.startEntity();
         }
     }
 

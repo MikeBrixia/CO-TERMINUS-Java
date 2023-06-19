@@ -15,8 +15,10 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Timer;
 
-public class Player extends GameEntity implements IUpdatable, ICollisionListener, IRenderable
+
+public class Player extends GameEntity implements IUpdatable, IRenderable, IDamageable
 {
     /** Object used to handle player inputs. */
     private Input inputHandler;
@@ -40,26 +42,37 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
      * to make another jump after landing. */
     private float jumpCooldown;
 
-    private float currentJumpCooldown;
+    /** True if the player is able to jump, false otherwise. */
+    public boolean canJump;
 
-    private boolean canJump;
+    /** Gameplay task responsible for shooting player projectiles. */
+    private ShootTask shootTask;
+
+    /** The time it needs to pass before the player is able
+     * to shoot another projectile. */
+    private float shootCooldown;
 
     private final String[] playerIdleAnimations = new String[]{
-            GameConfig.RES_FILEPATH + "sprites/Player/viggo_idle_0000.png",
-            GameConfig.RES_FILEPATH + "sprites/Player/viggo_idle_0001.png"
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_idle_0000.png",
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_idle_0001.png"
     };
 
     private final String[] playerRunningAnimations = new String[]{
-            GameConfig.RES_FILEPATH + "sprites/Player/viggo_run_0000.png",
-            GameConfig.RES_FILEPATH + "sprites/Player/viggo_run_0001.png",
-            GameConfig.RES_FILEPATH + "sprites/Player/viggo_run_0002.png",
-            GameConfig.RES_FILEPATH + "sprites/Player/viggo_run_0003.png"
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_run_0000.png",
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_run_0001.png",
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_run_0002.png",
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_run_0003.png"
     };
 
     private final String[] playerJumpingAnimation = new String[]{
-            GameConfig.RES_FILEPATH + "sprites/Player/viggo_jump_0000.png",
-            GameConfig.RES_FILEPATH + "sprites/Player/viggo_jump_0001.png",
-            GameConfig.RES_FILEPATH + "sprites/Player/viggo_jump_0002.png",
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_jump_0000.png",
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_jump_0001.png",
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_jump_0002.png",
+    };
+
+    private final String[] playerShootingAnimation = new String[]{
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_shoot_0000.png",
+            GameConfig.RES_FILEPATH + "sprites/player/viggo_shoot_0001.png"
     };
 
     public Player()
@@ -72,14 +85,22 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
 
         // Create and initialize player sprite component.
         spriteComponent = (SpriteComponent) GameFactory.createComponent(SpriteComponent.class, this);
-        Sprite playerSprite = new Sprite(new Texture(GameConfig.RES_FILEPATH + "sprites/Player/viggo_idle_0000.png"));
+        Sprite playerSprite = new Sprite(new Texture(GameConfig.RES_FILEPATH + "sprites/player/viggo_idle_0000.png"));
         spriteComponent.setSprite(playerSprite);
 
         // Create movement component.
         movementComponent = (MovementComponent2D) GameFactory.createComponent(MovementComponent2D.class, this);
+        // Initialize walking movement property.
+        MovementProperty walkingMovement = new MovementProperty(1000, 1200,
+                                                            400, 100,
+                                                        200);
+        movementComponent.addMovementProperty(EMovementState.WALKING, walkingMovement);
         jumpCooldown = .45f;
-        currentJumpCooldown = 0;
         canJump = true;
+
+        // Initialize shoot task.
+        this.shootTask = new ShootTask(20);
+        this.shootCooldown = 1.f;
 
         // Create animator component.
         animatorComponent = (AnimatorComponent) GameFactory.createComponent(AnimatorComponent.class, this);
@@ -92,6 +113,9 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
         // Initialize Jumping animation.
         Animation<Texture> jumpingAnimation = AnimationUtils.createAnimation("jumping", 0.3f, playerJumpingAnimation);
         animatorComponent.addAnimation("jumping", jumpingAnimation);
+        // Initialize shooting animation.
+        Animation<Texture> shootingAnimation = AnimationUtils.createAnimation("shoot", 0.3f, playerShootingAnimation);
+        animatorComponent.addAnimation("shoot", shootingAnimation);
     }
 
     @Override
@@ -157,6 +181,8 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
         // Process and handle jump inputs.
         jumpInput();
 
+        // Process and handle attack inputs.
+        attackInput();
     }
 
     /** Process horizontal movement inputs. */
@@ -193,39 +219,61 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
         movementComponent.addMovementInput(movementDirection);
     }
 
+    /** Process player attack input. */
+    private void attackInput()
+    {
+        // Is the shoot task already scheduled?
+        if(inputHandler.isKeyPressed(Input.Keys.F) && !shootTask.isScheduled())
+        {
+            // Check in which horizontal direction the player sprite is looking.
+            float xDirection = spriteComponent.getSprite().isFlipX()? 1f : -1f;
+            // Update projectile task properties.
+            Vector2 spawnPosition = new Vector2(getX() + ( 4f * xDirection), getY());
+            Vector2 shootDirection = new Vector2(xDirection, 0);
+            shootTask.setSpawnPosition(spawnPosition);
+            shootTask.setDirection(shootDirection);
+
+            // If not, then shoot a projectile and start a cooldown timer.
+            shootTask.shoot();
+            Timer attackCooldown = new Timer();
+            attackCooldown.scheduleTask(shootTask, shootCooldown);
+            // Play shoot animation.
+            animatorComponent.play("shoot", Animation.PlayMode.NORMAL, true);
+        }
+    }
+
     /** Process jump input. */
     private void jumpInput()
     {
-        float deltaTime = Gdx.graphics.getDeltaTime();
-
         // Has the player pressed the jump button?
-        if(inputHandler.isKeyPressed(Input.Keys.SPACE)) {
+        if(inputHandler.isKeyPressed(Input.Keys.SPACE))
+        {
             // Is the player currently able to jump?
-            if(canJump){
+            if(canJump)
+            {
                 // If true, then perform a jump.
                 movementComponent.jump();
                 // Play the jump animation and block the player jump temporarily.
                 animatorComponent.play("jumping", Animation.PlayMode.NORMAL, true);
                 canJump = false;
+
+                // Initiate jump cooldown.
+                Timer jumpCooldownTimer = new Timer();
+                Timer.Task jumpTask = new Timer.Task()
+                {
+                    @Override
+                    public void run() {
+                        canJump = true;
+                    }
+                };
+                jumpCooldownTimer.scheduleTask(jumpTask, jumpCooldown);
             }
         }
-        else {
+        else
+        {
             // If player releases the jump button early,
             // stop the jump.
             movementComponent.stopJump();
-        }
-
-        // Is the player currently blocked from jumping?
-        if(!canJump){
-            // If true then advance cooldown timer.
-            currentJumpCooldown += deltaTime;
-            // Has the jump cooldown expired?
-            if(currentJumpCooldown >= jumpCooldown){
-                // If true, unlock jump for the player and
-                // reset cooldown.
-                canJump = true;
-                currentJumpCooldown = 0f;
-            }
         }
     }
 
@@ -265,39 +313,14 @@ public class Player extends GameEntity implements IUpdatable, ICollisionListener
     }
 
     @Override
-    public void onCollision(Contact contact) {
-        Fixture otherCollider = contact.getFixtureA().equals(collider)? contact.getFixtureB() : contact.getFixtureA();
-
-        Object userData = otherCollider.getBody().getUserData();
-        // Is the other body collider an entity with the AI tag assigned to it?
-        if(userData instanceof GameEntity entity
-                && entity.getTag().equals("AI"))
-        {
-
-        }
-        // If the player has collided with the ground or an invisible wall
-        // notify the movement component that there was a collision.
-        else if(userData.equals("Ground") || userData.equals("InvisibleWall"))
-        {
-        }
-    }
-
-    @Override
-    public void onCollisionEnd(Contact contact) {
-        Fixture otherCollider = contact.getFixtureA().equals(collider)? contact.getFixtureB() : contact.getFixtureA();
-
-        Object userData = otherCollider.getBody().getUserData();
-        // Is the other body collider an entity with the AI tag assigned to it?
-        if(userData instanceof GameEntity entity && entity.getTag().equals("AI"))
-        {
-
-        }
-        // If the player has collided with the ground or an invisible wall
-        // notify the movement component that there was a collision end event.
-        else if(userData.equals("Ground") || userData.equals("InvisibleWall"))
-        {
-            //movementComponent.onCollisionEnd(contact);
-        }
-
+    public void onReceiveDamage() {
+        // When the player gets hit, end the game
+        // by closing the application.
+        // In an ideal scenario this would be the point
+        // where UI logic comes in, by displaying an
+        // interface to allow the player to restart the game,
+        // unfortunately there wasn't time for making the UI
+        // and game restart logic, so this will do.
+        System.exit(0);
     }
 }

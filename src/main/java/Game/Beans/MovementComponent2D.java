@@ -9,7 +9,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Component used to handle actors 2D movement inside the world. */
+/** Component used to handle actors 2D movement inside the world.
+ * this movement component is more suited for character-like entities.*/
 public final class MovementComponent2D extends GameComponent
 {
      /** The physics body which will be affected by movement. */
@@ -38,13 +39,13 @@ public final class MovementComponent2D extends GameComponent
           this.world = GameApplication.getGameInstance().getWorld();
           this.movementState = EMovementState.NONE;
 
-          // Initialize walking movement property.
-          MovementProperty walkingMovement = new MovementProperty(1000, 1200,
+          // Initialize default movement property.
+          MovementProperty defaultMovementProperty = new MovementProperty(1000, 1200,
                                                                400, 100,
                                                            200);
-          this.movementPropertiesMap.put(EMovementState.WALKING, walkingMovement);
-          this.movementPropertiesMap.put(EMovementState.FALLING, walkingMovement);
-          this.movementPropertiesMap.put(EMovementState.JUMPING, walkingMovement);
+          this.movementPropertiesMap.put(EMovementState.WALKING, defaultMovementProperty);
+          this.movementPropertiesMap.put(EMovementState.FALLING, defaultMovementProperty);
+          this.movementPropertiesMap.put(EMovementState.JUMPING, defaultMovementProperty);
 
           // Set the movement state to walking the the game starts.
           // Walking will be the default movement mode on game startup
@@ -148,6 +149,12 @@ public final class MovementComponent2D extends GameComponent
                // being used with the ones relative to the new state.
                this.movementProperty = movementPropertiesMap.get(movementState);
           }
+     }
+
+     /** Add a new movement property to this component. */
+     public void addMovementProperty(EMovementState movementState, MovementProperty property)
+     {
+          movementPropertiesMap.put(movementState, property);
      }
 
      public void setRigidBody(Body rigidBody)

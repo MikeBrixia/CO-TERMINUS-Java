@@ -50,6 +50,8 @@ public class GameLevel extends Scene
 
         // Create player instance.
         gameManager.player = (Player) GameFactory.createEntity(Player.class);
+        // Create AI.
+        gameManager.AI = (Enemy) GameFactory.createEntity(Enemy.class);
     }
 
     public void render() {
@@ -61,11 +63,32 @@ public class GameLevel extends Scene
             mapRenderer.setView(GameApplication.getCamera());
         }
 
+        // Get the game manager unique instance reference.
+        // Because Libgdx doesn't have a Z Index(for what I currently know),
+        // I will use the game manager to store groups of entities that needs
+        // to be rendered and manually do that here.
+        GameManager gameManager = GameManager.get();
+
         // Render the player on screen. The player
-        // render method MUST be called after the map render
-        // method because Libgdx doesn't have a nice way of ordering
-        // sprites like Z Index grouping.
-        GameManager.get().player.render();
+        // render method MUST be called after the map render method.
+        gameManager.player.render();
+
+        // Render all valid projectiles.
+        if(gameManager.projectiles != null)
+        {
+            // Render all projectiles in the game.
+            for(Projectile projectile : gameManager.projectiles)
+            {
+                projectile.render();
+            }
+        }
+        Enemy enemy = gameManager.AI;
+        
+        // Draw the AI on screen when active.
+        if(enemy.active)
+        {
+            enemy.render();
+        }
     }
 
     /** Create all the scene colliders using the map layer collision
