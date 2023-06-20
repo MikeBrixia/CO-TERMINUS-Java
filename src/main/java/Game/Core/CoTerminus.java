@@ -72,15 +72,10 @@ public class CoTerminus extends Game
     /** Update the game world. */
     public void gameLoopUpdate(float deltaTime)
     {
-        // Process user input.
-        handleInput();
         // Tick update(called every frame)
         update(deltaTime);
         // Draw game data on screen.
         render();
-    }
-
-    private void handleInput() {
     }
 
     public void update(float deltaTime) {
