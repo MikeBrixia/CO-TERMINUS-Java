@@ -30,17 +30,17 @@ public class Enemy extends GameEntity implements IDamageable, ICollisionListener
     private Vector2 movementDirection;
 
     private String[] enemyFrames = new String[]{
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_00.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_01.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_02.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_03.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_04.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_05.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_06.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_07.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_08.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_10.png",
-            GameConfig.RES_FILEPATH + "sprites/enemy/boomba-light_11.png",
+            "sprites/enemy/boomba-light_00.png",
+            "sprites/enemy/boomba-light_01.png",
+            "sprites/enemy/boomba-light_02.png",
+            "sprites/enemy/boomba-light_03.png",
+            "sprites/enemy/boomba-light_04.png",
+            "sprites/enemy/boomba-light_05.png",
+            "sprites/enemy/boomba-light_06.png",
+            "sprites/enemy/boomba-light_07.png",
+            "sprites/enemy/boomba-light_08.png",
+           "sprites/enemy/boomba-light_10.png",
+            "sprites/enemy/boomba-light_11.png",
     };
 
     public Enemy()

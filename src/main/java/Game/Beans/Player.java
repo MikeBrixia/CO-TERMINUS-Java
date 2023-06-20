@@ -53,26 +53,26 @@ public class Player extends GameEntity implements IUpdatable, IRenderable, IDama
     private float shootCooldown;
 
     private final String[] playerIdleAnimations = new String[]{
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_idle_0000.png",
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_idle_0001.png"
+            "sprites/player/viggo_idle_0000.png",
+            "sprites/player/viggo_idle_0001.png"
     };
 
     private final String[] playerRunningAnimations = new String[]{
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_run_0000.png",
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_run_0001.png",
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_run_0002.png",
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_run_0003.png"
+            "sprites/player/viggo_run_0000.png",
+            "sprites/player/viggo_run_0001.png",
+            "sprites/player/viggo_run_0002.png",
+            "sprites/player/viggo_run_0003.png"
     };
 
     private final String[] playerJumpingAnimation = new String[]{
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_jump_0000.png",
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_jump_0001.png",
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_jump_0002.png",
+            "sprites/player/viggo_jump_0000.png",
+            "sprites/player/viggo_jump_0001.png",
+            "sprites/player/viggo_jump_0002.png",
     };
 
     private final String[] playerShootingAnimation = new String[]{
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_shoot_0000.png",
-            GameConfig.RES_FILEPATH + "sprites/player/viggo_shoot_0001.png"
+            "sprites/player/viggo_shoot_0000.png",
+            "sprites/player/viggo_shoot_0001.png"
     };
 
     public Player()
@@ -85,7 +85,7 @@ public class Player extends GameEntity implements IUpdatable, IRenderable, IDama
 
         // Create and initialize player sprite component.
         spriteComponent = (SpriteComponent) GameFactory.createComponent(SpriteComponent.class, this);
-        Sprite playerSprite = new Sprite(new Texture(GameConfig.RES_FILEPATH + "sprites/player/viggo_idle_0000.png"));
+        Sprite playerSprite = new Sprite(new Texture("sprites/player/viggo_idle_0000.png"));
         spriteComponent.setSprite(playerSprite);
 
         // Create movement component.

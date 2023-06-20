@@ -16,7 +16,4 @@ public class GameConfig
     /** The gravity force of the game. */
     public static final Vector2 gravity = new Vector2(0f, -9.8f);
 
-    /** The game resource folder filepath. */
-    public static final String RES_FILEPATH = "src/main/resources/";
-
 }

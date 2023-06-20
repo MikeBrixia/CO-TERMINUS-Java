@@ -33,7 +33,7 @@ public class GameLevel extends Scene
     @Override
     public void init() {
         // Load tilemap .tmx file from disk.
-        map = GameUtils.loadTmxTilemap(GameConfig.RES_FILEPATH + "Levels/Map.tmx");
+        map = GameUtils.loadTmxTilemap("Levels/Map.tmx");
 
         // Read map unit scale from the transformation constants config.
         unitScale = GameConfig.METER_PER_PIXEL;

@@ -1,7 +1,6 @@
 package Game.Beans;
 
 import Game.Core.*;
-import Game.Graphics.AnimatorComponent;
 import Game.Graphics.SpriteComponent;
 import Game.Utils.GameConfig;
 import com.badlogic.gdx.graphics.Texture;
@@ -41,7 +40,7 @@ public class Projectile extends GameEntity implements ICollisionListener, IRende
 
         // Create and initialize sprite component.
         this.spriteComponent = (SpriteComponent) GameFactory.createComponent(SpriteComponent.class, this);
-        Sprite sprite = new Sprite(new Texture(GameConfig.RES_FILEPATH + "sprites/player/projectile/viggo-blast_0000.png"));
+        Sprite sprite = new Sprite(new Texture("sprites/player/projectile/viggo-blast_0000.png"));
         spriteComponent.setSprite(sprite);
     }
 
